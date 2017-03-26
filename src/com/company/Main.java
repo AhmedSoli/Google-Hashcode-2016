@@ -18,6 +18,10 @@ public class Main{
         double score = 0;
         while(true){
             String [] files = {"mother_of_all_warehouses.txt","busy_day.txt","redundancy.txt"};
+            System.out.println("Choose the number of file:");
+            System.out.println("0 -- Mother of all warehouses");
+            System.out.println("1 -- Busy day");
+            System.out.println("2 -- Redundancy");
             Scanner scanner = new Scanner(System.in);
             String read = scanner.nextLine();
             String filePath = "./data/" + files[Integer.parseInt(read)];
