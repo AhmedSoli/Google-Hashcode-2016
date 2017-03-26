@@ -14,7 +14,7 @@ import java.util.List;
 public class Main{
 
     public static void main(String[] args) {
-        String filePath = "./mother_of_all_warehouses.txt";
+        String filePath = "./data/mother_of_all_warehouses.txt";
         Interpreter env = new Interpreter(filePath);
         List <String> commands = new ArrayList<String>();
         for (Drone drone: env.drones){
