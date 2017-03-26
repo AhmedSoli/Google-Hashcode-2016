@@ -56,12 +56,12 @@ class Interpreter {
         numberOfWareHouses = Integer.parseInt(line3[0]);
         warehouses = new Warehouse[numberOfWareHouses];
         for(int wareHouseID = 0; wareHouseID< numberOfWareHouses;wareHouseID++){
-            String [] line4 = lines[4+(wareHouseID*3)].split(" ");
+            String [] line4 = lines[4+(wareHouseID*2)].split(" ");
             Warehouse warehouse = new Warehouse();
             warehouse.location.row = Integer.parseInt(line4[0]);
             warehouse.location.column = Integer.parseInt(line4[1]);
             warehouse.numberOfAvailableProducts = new int[numberOfProductTypes];
-            String [] line5 = lines[5+(wareHouseID*3)].split(" ");
+            String [] line5 = lines[5+(wareHouseID*2)].split(" ");
             for(int productID = 0;productID<numberOfProductTypes;productID++){
                 warehouse.numberOfAvailableProducts[productID] = Integer.parseInt(line5[productID]);
             }
@@ -78,7 +78,7 @@ class Interpreter {
 
         }
         // Setting up Customer orders
-        int lineIndex = 6+(numberOfWareHouses - 1)*3;
+        int lineIndex = 6+(numberOfWareHouses - 1)*2;
         String [] line6 = lines[lineIndex].split(" ");
         numberOfOrders = Integer.parseInt(line6[0]);
         orders = new Order[numberOfOrders];

@@ -20,6 +20,6 @@ public class Order {
     }
 
     public double getScore(int deadline, int turn){
-        return ((deadline - turn) / turn) * 100;
+       return  (100 *(deadline - turn) ) / deadline;
     }
 }

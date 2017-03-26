@@ -10,7 +10,7 @@ public class Drone {
     int remainingSpace;
     int maxSpace;
     Location location;
-    double turn;
+    int turn;
 
     public Drone(int maxSpace){
         location = new Location();
@@ -49,5 +49,6 @@ public class Drone {
         remainingSpace = maxSpace;
         order.delivered = order.loaded;
         turn += 1 + distance;
+        this.location = order.location;
     }
 }
