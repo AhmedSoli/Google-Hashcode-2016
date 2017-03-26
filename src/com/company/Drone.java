@@ -8,14 +8,14 @@ import java.util.List;
  */
 public class Drone {
     int remainingSpace;
-    int maxSpace;
+    int maxCapacity;
     Location location;
     int turn;
 
-    public Drone(int maxSpace){
+    public Drone(int maxCapacity){
         location = new Location();
-        this.maxSpace = maxSpace;
-        this.remainingSpace = maxSpace;
+        this.maxCapacity = maxCapacity;
+        this.remainingSpace = maxCapacity;
         turn = 0;
     }
 
@@ -29,9 +29,12 @@ public class Drone {
             while(true) {
                 if(order.loaded == order.products.length || order.products[order.loaded] != load.product){
                     break innerLoop;
-                } else if (remainingSpace < order.products[order.loaded].productWeight) {
+                } else if (remainingSpace < order.products[order.loaded].productWeight ||
+                        order.warehouse.numberOfAvailableProducts[order.products[order.loaded].productID]
+                                == 0) {
                     break outerLoop;
                 } else {
+                    order.warehouse.numberOfAvailableProducts[order.products[order.remainingItemsStart].productID]--;
                     remainingSpace -= order.products[order.loaded].productWeight;
                     order.loaded++;
                     load.numberOfItems++;
@@ -46,8 +49,8 @@ public class Drone {
     }
 
     public void deliver(Order order,int distance){
-        remainingSpace = maxSpace;
-        order.delivered = order.loaded;
+        remainingSpace = maxCapacity;
+        order.remainingItemsStart = order.loaded;
         turn += 1 + distance;
         this.location = order.location;
     }

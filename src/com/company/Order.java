@@ -8,7 +8,9 @@ public class Order {
     Product products[];
     Location location;
     int loaded;
-    int delivered;
+    int remainingItemsStart;
+    Warehouse warehouse;
+    double bestWarehouseValue;
     boolean done;
 
 
@@ -16,7 +18,9 @@ public class Order {
         location = new Location();
         done = false;
         loaded = 0;
-        delivered = 0;
+        remainingItemsStart = 0;
+        warehouse = null;
+        bestWarehouseValue = -1;
     }
 
     public double getScore(int deadline, int turn){

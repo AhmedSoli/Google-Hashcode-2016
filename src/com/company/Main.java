@@ -18,13 +18,20 @@ public class Main{
         double score = 0;
         while(true){
             String [] files = {"mother_of_all_warehouses.txt","busy_day.txt","redundancy.txt"};
-            System.out.println("Choose the number of file:");
-            System.out.println("0 -- Mother of all warehouses");
-            System.out.println("1 -- Busy day");
-            System.out.println("2 -- Redundancy");
+            System.out.println("Choose the number of file:\n" +
+            "0 -- Mother of all warehouses\n" +
+            "1 -- Busy day\n" +
+            "2 -- Redundancy");
             Scanner scanner = new Scanner(System.in);
             String read = scanner.nextLine();
-            String filePath = "./data/" + files[Integer.parseInt(read)];
+            int fileNumber = 0;
+            try {
+                fileNumber = Integer.parseInt(read);
+                if(fileNumber != 0 && fileNumber != 1 && fileNumber !=2){continue;}
+            } catch (NumberFormatException e){
+                continue;
+            }
+            String filePath = "./data/" + files[fileNumber];
             Interpreter env = new Interpreter(filePath);
             List <String> commands = new ArrayList<String>();
             for(int turn = 0;turn < env.simulation.deadline;turn++){
@@ -35,9 +42,9 @@ public class Main{
                     }
                 }
             }
-            print(String.valueOf(env.score));
+            print("File Score: " + String.valueOf(env.score));
             score += env.score;
-            print(String.valueOf(score));
+            print("Overall Score: " + String.valueOf(score));
         }
     }
 

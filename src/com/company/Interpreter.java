@@ -61,6 +61,7 @@ class Interpreter {
             warehouse.location.row = Integer.parseInt(line4[0]);
             warehouse.location.column = Integer.parseInt(line4[1]);
             warehouse.numberOfAvailableProducts = new int[numberOfProductTypes];
+            warehouse.warehouseID = wareHouseID;
             String [] line5 = lines[5+(wareHouseID*2)].split(" ");
             for(int productID = 0;productID<numberOfProductTypes;productID++){
                 warehouse.numberOfAvailableProducts[productID] = Integer.parseInt(line5[productID]);
@@ -109,7 +110,7 @@ class Interpreter {
         if(turn == drone.turn){
             for (Order order: orders){
                 if(!order.done && order.products[order.loaded].productWeight <= drone.remainingSpace){
-                    double value = calculateValue(drone,order);
+                    double value = getValue(drone,order);
                     if(value > bestValue){
                         bestOrder = order;
                     }
@@ -117,12 +118,12 @@ class Interpreter {
             }
         }
         if(bestOrder != null) {
-            int loadDistance = calculateDistancteBetweenLocations(bestOrder.location,warehouses[0].location);
-            int deliveryDistance = calculateDistancteBetweenLocations(bestOrder.location,drone.location);
+            int loadDistance = getDistanceBetweenLocations(bestOrder.location,warehouses[0].location);
+            int deliveryDistance = getDistanceBetweenLocations(bestOrder.location,drone.location);
             if(loadDistance + deliveryDistance + 2 + drone.turn <= simulation.deadline) {
                 drone.load(bestOrder,loadDistance);
                 drone.deliver(bestOrder,deliveryDistance);
-                if(bestOrder.delivered == bestOrder.products.length){
+                if(bestOrder.remainingItemsStart == bestOrder.products.length){
                     bestOrder.done = true;
                     score += bestOrder.getScore(simulation.deadline,loadDistance + deliveryDistance + 2 + turn);
                 }
@@ -131,15 +132,41 @@ class Interpreter {
         return commands;
     }
 
-    private int calculateDistancteBetweenLocations(Location from, Location to){
+    private int getDistanceBetweenLocations(Location from, Location to){
         double distance = Math.sqrt(Math.abs(from.row - to.row) + Math.abs(from.column - to.column));
         return (int) Math.ceil(distance);
     }
 
-    private double calculateValue(Drone drone, Order order){
-        double distance = calculateDistancteBetweenLocations(drone.location, warehouses[0].location) +
-                calculateDistancteBetweenLocations(warehouses[0].location,order.location);
-        return distance / getSize(order);
+    private double getValueAndSetBestWarehouse(Drone drone, Order order){
+        for(Warehouse warehouse :warehouses){
+            int remainingSpace = drone.maxCapacity;
+            int itemNumber = order.remainingItemsStart;
+            int itemsadded = 0;
+            while(itemNumber<order.products.length){
+                if(remainingSpace < order.products[itemNumber].productWeight){
+                    break;
+                } else {
+                    remainingSpace -= order.products[itemNumber].productWeight;
+                    itemNumber++;
+                    itemsadded++;
+                }
+            }
+            double warehouseValue = (itemNumber+1) / order.products.length;
+            if(warehouseValue > order.bestWarehouseValue){
+                order.bestWarehouseValue = warehouseValue;
+                order.warehouse = warehouse;
+            }
+        }
+        double distance = getDistanceBetweenLocations(drone.location,order.warehouse.location) +
+                getDistanceBetweenLocations(order.warehouse.location,order.location);
+        return (distance / getSize(order)) * order.bestWarehouseValue;
+    }
+
+    private double getValue(Drone drone, Order order){
+        order.warehouse = warehouses[0];
+        double distance = getDistanceBetweenLocations(drone.location,order.warehouse.location) +
+                getDistanceBetweenLocations(order.warehouse.location,order.location);
+        return (distance / getSize(order));
     }
 
     private double getSize(Order order){
