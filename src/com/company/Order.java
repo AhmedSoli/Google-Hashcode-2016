@@ -18,4 +18,8 @@ public class Order {
         loaded = 0;
         delivered = 0;
     }
+
+    public double getScore(int deadline, int turn){
+        return ((deadline - turn) / turn) * 100;
+    }
 }

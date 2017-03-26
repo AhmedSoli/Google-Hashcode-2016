@@ -7,28 +7,33 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * Created by Soli on 25/03/2017.
  */
-public class Interpreter {
+class Interpreter {
 
     int maximumLoadOfDrone;
     int numberOfWareHouses;
     int numberOfOrders;
     int numberOfDrones;
     int numberOfProductTypes;
+    double score;
     Product [] products;
     Drone [] drones;
     Simulation simulation;
     Warehouse [] warehouses;
     Order [] orders;
 
-    public Interpreter(String filePath){
+    Interpreter(String filePath){
         // Reading the file
         String content = readFile(filePath, StandardCharsets.UTF_8);
         String [] lines = content.split("\n");
+        // Setting the score to 0
+        score = 0;
         // Setting up the simulation
         String [] line0 = lines[0].split(" ");
         simulation = new Simulation();
@@ -67,9 +72,8 @@ public class Interpreter {
         maximumLoadOfDrone = Integer.parseInt(line0[4]);
         drones = new Drone[numberOfDrones];
         for(int droneID = 0; droneID < numberOfDrones;droneID++){
-            Drone drone = new Drone();
+            Drone drone = new Drone(maximumLoadOfDrone);
             drone.location = warehouses[0].location;
-            drone.remainingSpace = maximumLoadOfDrone;
             drones[droneID] = drone;
 
         }
@@ -97,19 +101,15 @@ public class Interpreter {
         }
     }
 
-    public String[] getNextCommand(Drone drone,int turn){
-        String[] commands = new String[3];
-        commands[0] = "";
-        commands[1] = "";
-        commands[2] = "";
+    List <String> getNextCommand(Drone drone,int turn){
+        List commands = new ArrayList<>();
 
         double bestValue = 0;
         Order bestOrder = null;
         if(turn == drone.turn){
-            double value = 0;
             for (Order order: orders){
-                if(order.done == false){
-                    value = calculateValue(drone,order);
+                if(!order.done && order.products[order.loaded].productWeight <= drone.remainingSpace){
+                    double value = calculateValue(drone,order);
                     if(value > bestValue){
                         bestOrder = order;
                     }
@@ -117,28 +117,32 @@ public class Interpreter {
             }
         }
         if(bestOrder != null) {
-            drone.load(bestOrder,calculateDistancteBetweenLocations(bestOrder.location,warehouses[0].location));
-            // Todo
-            drone.deliver(products,bestOrder);
-            if(bestOrder.loaded == bestOrder.products.length){
-                bestOrder.done = true;
+            int loadDistance = calculateDistancteBetweenLocations(bestOrder.location,warehouses[0].location);
+            int deliveryDistance = calculateDistancteBetweenLocations(bestOrder.location,drone.location);
+            if(loadDistance + deliveryDistance + 2 + drone.turn <= simulation.deadline) {
+                drone.load(bestOrder,loadDistance);
+                drone.deliver(bestOrder,deliveryDistance);
+                if(bestOrder.delivered == bestOrder.products.length){
+                    bestOrder.done = true;
+                    score += bestOrder.getScore(simulation.deadline,loadDistance + deliveryDistance + 2 + turn);
+                }
             }
         }
         return commands;
     }
 
-    public double calculateDistancteBetweenLocations(Location from, Location to){
+    private int calculateDistancteBetweenLocations(Location from, Location to){
         double distance = Math.sqrt(Math.abs(from.row - to.row) + Math.abs(from.column - to.column));
-        return Math.ceil(distance);
+        return (int) Math.ceil(distance);
     }
 
-    public double calculateValue(Drone drone, Order order){
+    private double calculateValue(Drone drone, Order order){
         double distance = calculateDistancteBetweenLocations(drone.location, warehouses[0].location) +
                 calculateDistancteBetweenLocations(warehouses[0].location,order.location);
         return distance / getSize(order);
     }
 
-    public double getSize(Order order){
+    private double getSize(Order order){
         double size = 0;
         for (Product product: order.products){
             size += product.productWeight;
@@ -147,10 +151,9 @@ public class Interpreter {
     }
 
     @NotNull
-    static String readFile(String path, Charset encoding){
-        byte[] encoded = new byte[0];
+    private static String readFile(String path, Charset encoding){
         try {
-            encoded = Files.readAllBytes(Paths.get(path));
+            byte[] encoded = Files.readAllBytes(Paths.get(path));
             return new String(encoded, encoding);
         } catch (IOException e) {
             System.out.println("File didn't load correctly! Please check path!");

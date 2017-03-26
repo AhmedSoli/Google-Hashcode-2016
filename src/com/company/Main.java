@@ -19,14 +19,13 @@ public class Main{
         List <String> commands = new ArrayList<String>();
         for (Drone drone: env.drones){
             for(int turn = 0;turn < env.simulation.deadline;turn++){
-                String [] commandsTemp = env.getNextCommand(drone,turn);
-                if (commandsTemp[0] != ""){
-                    commands.add(commandsTemp[0]);
-                    commands.add(commandsTemp[1]);
-                    commands.add(commandsTemp[2]);
+                List <String> commandsTemp = env.getNextCommand(drone,turn);
+                if (!commandsTemp.isEmpty()){
+                    commands.addAll(commandsTemp);
                 }
             }
         }
+        print(String.valueOf(env.score));
 
     }
 

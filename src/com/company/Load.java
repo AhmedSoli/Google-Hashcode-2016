@@ -6,4 +6,7 @@ package com.company;
 public class Load {
     Product product;
     int numberOfItems;
+    public Load(){
+        numberOfItems = 0;
+    }
 }
