@@ -140,7 +140,7 @@ class Interpreter {
     }
 
     private double getValue(Drone drone, Order order){
-        order.bestWarehouseValue = 1000000;
+        order.bestWarehouseValue = Double.MAX_VALUE;
         for(Warehouse warehouse :warehouses){
             int remainingSpace = drone.maxCapacity;
             int itemNumber = order.remainingItemsStart;
