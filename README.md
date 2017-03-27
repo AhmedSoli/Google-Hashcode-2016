@@ -5,8 +5,8 @@ the task docs and shows the scores for each individual file at the end.
 
 | File Name                    | Score   |
 |------------------------------|---------|
-| mother_of_all_warehouses.txt | 78846   |
-| busy_day.txt                 | 117103  |
-| redundancy                   | 98667.0 |
+| mother_of_all_warehouses.txt | 78458   |
+| busy_day.txt                 | 111845  |
+| redundancy                   | 98661   |
 
-                        Score = 294616
+                        Score = 288964
