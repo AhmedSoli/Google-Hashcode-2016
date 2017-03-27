@@ -10,3 +10,4 @@ the task docs and shows the scores for each individual file at the end.
 | redundancy                   | 98654   |
 
                         Score = 299616
+                      Runtime = 956 ms

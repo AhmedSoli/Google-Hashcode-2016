@@ -21,6 +21,7 @@ class Interpreter {
     int numberOfOrders;
     int numberOfDrones;
     int numberOfProductTypes;
+    int numberOfCommands;
     double score;
     Product [] products;
     Drone [] drones;
@@ -34,6 +35,8 @@ class Interpreter {
         String [] lines = content.split("\n");
         // Setting the score to 0
         score = 0;
+        // Setting the number of commands to 0
+        numberOfCommands = 0;
         // Setting up the simulation
         String [] line0 = lines[0].split(" ");
         simulation = new Simulation();
@@ -103,8 +106,8 @@ class Interpreter {
         }
     }
 
-    List <String> getNextCommand(Drone drone,int turn){
-        List commands = new ArrayList<>();
+    String getNextCommand(Drone drone,int turn){
+        String commands = "";
 
         double bestValue = Double.MAX_VALUE;
         Order bestOrder = null;
@@ -125,10 +128,11 @@ class Interpreter {
             if(loadDistance + deliveryDistance + 2 * (bestOrder.products.length - bestOrder.remainingItemsStart) + drone.turn <= simulation.deadline) {
                 List <Load> loads = drone.load(bestOrder,loadDistance);
                 for(Load load: loads){
-                    commands.add(drone.droneID + " " + "L" + bestOrder.warehouse.warehouseID + " "
-                            + load.product.productID + " " + load.numberOfItems);
-                    commands.add(drone.droneID + " " + "D" + bestOrder.orderID + " "
-                            + load.product.productID + " " + load.numberOfItems);
+                    numberOfCommands += 2;
+                    commands += drone.droneID + " " + "L" + " " + bestOrder.warehouse.warehouseID + " "
+                            + load.product.productID + " " + load.numberOfItems + "\n";
+                    commands += drone.droneID + " " + "D" + " " + bestOrder.orderID + " "
+                            + load.product.productID + " " + load.numberOfItems + "\n";
                 }
                 drone.deliver(bestOrder,deliveryDistance,loads.size());
                 if(bestOrder.remainingItemsStart == bestOrder.products.length){
