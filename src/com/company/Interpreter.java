@@ -3,6 +3,7 @@ package com.company;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.nio.DoubleBuffer;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -105,14 +106,15 @@ class Interpreter {
     List <String> getNextCommand(Drone drone,int turn){
         List commands = new ArrayList<>();
 
-        double bestValue = 0;
+        double bestValue = Double.MAX_VALUE;
         Order bestOrder = null;
         if(turn == drone.turn){
             for (Order order: orders){
-                if(!order.done && order.products[order.loaded].productWeight <= drone.remainingSpace){
+                if(!order.done  && order.products[order.loaded].productWeight <= drone.remainingSpace){
                     double value = getValue(drone,order);
-                    if(value > bestValue){
+                    if(value < bestValue){
                         bestOrder = order;
+                        bestValue = value;
                     }
                 }
             }
@@ -137,36 +139,32 @@ class Interpreter {
         return (int) Math.ceil(distance);
     }
 
-    private double getValueAndSetBestWarehouse(Drone drone, Order order){
+    private double getValue(Drone drone, Order order){
+        order.bestWarehouseValue = 1000000;
         for(Warehouse warehouse :warehouses){
             int remainingSpace = drone.maxCapacity;
             int itemNumber = order.remainingItemsStart;
-            int itemsadded = 0;
+            int itemAdded = 0;
             while(itemNumber<order.products.length){
-                if(remainingSpace < order.products[itemNumber].productWeight){
+                if(remainingSpace < order.products[itemNumber].productWeight ||
+                    warehouse.numberOfAvailableProducts[order.products[itemNumber].productID]
+                        == 0){
                     break;
                 } else {
                     remainingSpace -= order.products[itemNumber].productWeight;
                     itemNumber++;
-                    itemsadded++;
+                    itemAdded++;
                 }
             }
-            double warehouseValue = (itemNumber+1) / order.products.length;
-            if(warehouseValue > order.bestWarehouseValue){
+            double warehouseValue =  (double)order.products.length / (itemNumber) ;
+            if(warehouseValue < order.bestWarehouseValue && itemAdded != 0){
                 order.bestWarehouseValue = warehouseValue;
                 order.warehouse = warehouse;
             }
         }
         double distance = getDistanceBetweenLocations(drone.location,order.warehouse.location) +
                 getDistanceBetweenLocations(order.warehouse.location,order.location);
-        return (distance / getSize(order)) * order.bestWarehouseValue;
-    }
-
-    private double getValue(Drone drone, Order order){
-        order.warehouse = warehouses[0];
-        double distance = getDistanceBetweenLocations(drone.location,order.warehouse.location) +
-                getDistanceBetweenLocations(order.warehouse.location,order.location);
-        return (distance / getSize(order));
+        return  (distance * order.bestWarehouseValue)*getSize(order);
     }
 
     private double getSize(Order order){

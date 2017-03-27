@@ -1,12 +1,5 @@
 package com.company;
 
-import org.jetbrains.annotations.NotNull;
-
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -41,6 +34,7 @@ public class Main{
                         commands.addAll(commandsTemp);
                     }
                 }
+                print(String.valueOf(turn));
             }
             print("File Score: " + String.valueOf(env.score));
             score += env.score;

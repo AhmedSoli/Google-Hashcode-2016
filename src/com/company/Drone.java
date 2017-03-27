@@ -27,12 +27,11 @@ public class Drone {
             load.product = order.products[order.loaded];
             innerLoop:
             while(true) {
-                if(order.loaded == order.products.length || order.products[order.loaded] != load.product){
-                    break innerLoop;
-                } else if (remainingSpace < order.products[order.loaded].productWeight ||
-                        order.warehouse.numberOfAvailableProducts[order.products[order.loaded].productID]
-                                == 0) {
+                if (order.loaded == order.products.length ||remainingSpace < order.products[order.loaded].productWeight
+                        || order.warehouse.numberOfAvailableProducts[order.products[order.loaded].productID] == 0) {
                     break outerLoop;
+                } else  if(order.products[order.loaded] != load.product){
+                    break innerLoop;
                 } else {
                     order.warehouse.numberOfAvailableProducts[order.products[order.remainingItemsStart].productID]--;
                     remainingSpace -= order.products[order.loaded].productWeight;

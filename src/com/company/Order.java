@@ -19,8 +19,8 @@ public class Order {
         done = false;
         loaded = 0;
         remainingItemsStart = 0;
-        warehouse = null;
-        bestWarehouseValue = -1;
+        warehouse = new Warehouse();
+        bestWarehouseValue = 1000000;
     }
 
     public double getScore(int deadline, int turn){
