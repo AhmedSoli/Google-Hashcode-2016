@@ -11,3 +11,4 @@ the task docs and shows the scores for each individual file at the end.
 
                         Score = 299616
                       Runtime = 956 ms
+Solution files can be found in the folder solution. 
