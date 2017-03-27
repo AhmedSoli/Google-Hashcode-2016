@@ -75,6 +75,7 @@ class Interpreter {
         for(int droneID = 0; droneID < numberOfDrones;droneID++){
             Drone drone = new Drone(maximumLoadOfDrone);
             drone.location = warehouses[0].location;
+            drone.droneID = droneID;
             drones[droneID] = drone;
 
         }
@@ -121,9 +122,15 @@ class Interpreter {
         if(bestOrder != null) {
             int loadDistance = getDistanceBetweenLocations(bestOrder.location,warehouses[0].location);
             int deliveryDistance = getDistanceBetweenLocations(bestOrder.location,drone.location);
-            if(loadDistance + deliveryDistance + 2 + drone.turn <= simulation.deadline) {
-                drone.load(bestOrder,loadDistance);
-                drone.deliver(bestOrder,deliveryDistance);
+            if(loadDistance + deliveryDistance + 2 * (bestOrder.products.length - bestOrder.remainingItemsStart) + drone.turn <= simulation.deadline) {
+                List <Load> loads = drone.load(bestOrder,loadDistance);
+                for(Load load: loads){
+                    commands.add(drone.droneID + " " + "L" + bestOrder.warehouse.warehouseID + " "
+                            + load.product.productID + " " + load.numberOfItems);
+                    commands.add(drone.droneID + " " + "D" + bestOrder.orderID + " "
+                            + load.product.productID + " " + load.numberOfItems);
+                }
+                drone.deliver(bestOrder,deliveryDistance,loads.size());
                 if(bestOrder.remainingItemsStart == bestOrder.products.length){
                     bestOrder.done = true;
                     score += bestOrder.getScore(simulation.deadline,loadDistance + deliveryDistance + 2 + turn);

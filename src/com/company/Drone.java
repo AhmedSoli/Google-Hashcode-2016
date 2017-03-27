@@ -11,6 +11,7 @@ public class Drone {
     int maxCapacity;
     Location location;
     int turn;
+    int droneID;
 
     public Drone(int maxCapacity){
         location = new Location();
@@ -27,13 +28,13 @@ public class Drone {
             load.product = order.products[order.loaded];
             innerLoop:
             while(true) {
-                if (order.loaded == order.products.length ||remainingSpace < order.products[order.loaded].productWeight
+                if (order.loaded == order.products.length || remainingSpace < order.products[order.loaded].productWeight
                         || order.warehouse.numberOfAvailableProducts[order.products[order.loaded].productID] <= 0) {
                     break outerLoop;
                 } else  if(order.products[order.loaded] != load.product){
                     break innerLoop;
                 } else {
-                    order.warehouse.numberOfAvailableProducts[order.products[order.remainingItemsStart].productID]--;
+                    order.warehouse.numberOfAvailableProducts[order.products[order.loaded].productID]--;
                     remainingSpace -= order.products[order.loaded].productWeight;
                     order.loaded++;
                     load.numberOfItems++;
@@ -47,10 +48,10 @@ public class Drone {
         return loads;
     }
 
-    public void deliver(Order order,int distance){
+    public void deliver(Order order,int distance, int numberOfCommands){
         remainingSpace = maxCapacity;
         order.remainingItemsStart = order.loaded;
-        turn += 1 + distance;
+        turn += numberOfCommands + distance;
         this.location = order.location;
     }
 }
