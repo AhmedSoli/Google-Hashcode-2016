@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class Main{
 
-    public static void main(String[] args) {
+    public static void main(String[] ar) {
         double score = 0;
         while(true){
             String [] files = {"mother_of_all_warehouses.txt","busy_day.txt","redundancy.txt"};
