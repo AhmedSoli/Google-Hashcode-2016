@@ -28,7 +28,7 @@ public class Drone {
             innerLoop:
             while(true) {
                 if (order.loaded == order.products.length ||remainingSpace < order.products[order.loaded].productWeight
-                        || order.warehouse.numberOfAvailableProducts[order.products[order.loaded].productID] == 0) {
+                        || order.warehouse.numberOfAvailableProducts[order.products[order.loaded].productID] <= 0) {
                     break outerLoop;
                 } else  if(order.products[order.loaded] != load.product){
                     break innerLoop;

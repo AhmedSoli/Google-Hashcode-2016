@@ -148,7 +148,7 @@ class Interpreter {
             while(itemNumber<order.products.length){
                 if(remainingSpace < order.products[itemNumber].productWeight ||
                     warehouse.numberOfAvailableProducts[order.products[itemNumber].productID]
-                        == 0){
+                        <= 0){
                     break;
                 } else {
                     remainingSpace -= order.products[itemNumber].productWeight;
